@@ -1,0 +1,300 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  // Default model for any primary agent that does not pin its own model.
+  "model": "opencode/deepseek-v4-flash-free",
+
+  "agent": {
+    "prompter": {
+      "description": "Clarifies rough user intent and writes a comprehensive prompt handoff for /analyze.",
+      "mode": "primary",
+      "model": "opencode/deepseek-v4-flash-free",
+      "temperature": 0.15,
+      "prompt": "{file:prompts/prompter.md}",
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "bash": {
+          "*": "ask",
+          "Test-Path -LiteralPath '.opencode/tmp/prompt-handoff.md'": "allow",
+          "Test-Path -LiteralPath '.opencode/tmp/analyzer-handoff.md'": "allow",
+          "Test-Path -LiteralPath '.opencode/tmp/brainstorm-handoff.md'": "allow",
+          "Test-Path -LiteralPath '.opencode/tmp/sprint-backlog.md'": "allow",
+          "Remove-Item -LiteralPath '.opencode/tmp/prompt-handoff.md' -Force": "allow",
+          "Remove-Item -LiteralPath '.opencode/tmp/analyzer-handoff.md' -Force": "allow",
+          "Remove-Item -LiteralPath '.opencode/tmp/brainstorm-handoff.md' -Force": "allow",
+          "Remove-Item -LiteralPath '.opencode/tmp/sprint-backlog.md' -Force": "allow"
+        },
+        "edit": {
+          "*": "deny",
+          ".opencode/tmp/*": "allow"
+        },
+        "question": "allow",
+        "webfetch": "ask",
+        "websearch": "ask"
+      }
+    },
+
+    "repo-analyzer": {
+      "description": "Coordinates repository analysis, delegates read-only slices, detects environment/runtime, and writes a comprehensive analyzer handoff.",
+      "mode": "primary",
+      "model": "opencode/deepseek-v4-flash-free",
+      "temperature": 0.1,
+      "prompt": "{file:prompts/repo-analyzer.md}",
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "task": {
+          "*": "deny",
+          "backend-analyzer": "allow",
+          "frontend-analyzer": "allow",
+          "docker-devops-analyzer": "allow",
+          "security-analyzer": "allow",
+          "test-analyzer": "allow"
+        },
+        "bash": {
+          "*": "ask",
+          "Test-Path -LiteralPath '.opencode/tmp/prompt-handoff.md'": "allow",
+          "Test-Path -LiteralPath '.opencode/tmp/analyzer-handoff.md'": "allow",
+          "Test-Path -LiteralPath '.opencode/tmp/brainstorm-handoff.md'": "allow",
+          "Test-Path -LiteralPath '.opencode/tmp/sprint-backlog.md'": "allow",
+          "Remove-Item -LiteralPath '.opencode/tmp/prompt-handoff.md' -Force": "allow",
+          "Remove-Item -LiteralPath '.opencode/tmp/analyzer-handoff.md' -Force": "allow",
+          "Remove-Item -LiteralPath '.opencode/tmp/brainstorm-handoff.md' -Force": "allow",
+          "Remove-Item -LiteralPath '.opencode/tmp/sprint-backlog.md' -Force": "allow"
+        },
+        "edit": {
+          "*": "deny",
+          ".opencode/tmp/*": "allow"
+        },
+        "webfetch": "ask",
+        "websearch": "ask"
+      }
+    },
+
+    "backend-analyzer": {
+      "description": "Read-only backend/API/database/auth/server analysis subagent.",
+      "mode": "subagent",
+      "model": "opencode/deepseek-v4-flash-free",
+      "temperature": 0.1,
+      "prompt": "{file:prompts/backend-analyzer.md}",
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "bash": "ask",
+        "edit": "deny"
+      }
+    },
+
+    "frontend-analyzer": {
+      "description": "Read-only frontend/UI/routing/state/API-client analysis subagent.",
+      "mode": "subagent",
+      "model": "opencode/deepseek-v4-flash-free",
+      "temperature": 0.1,
+      "prompt": "{file:prompts/frontend-analyzer.md}",
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "bash": "ask",
+        "edit": "deny"
+      }
+    },
+
+    "docker-devops-analyzer": {
+      "description": "Read-only Docker, deployment, CI/CD, scripts, env, and runtime config analysis subagent.",
+      "mode": "subagent",
+      "model": "opencode/deepseek-v4-flash-free",
+      "temperature": 0.1,
+      "prompt": "{file:prompts/docker-devops-analyzer.md}",
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "bash": "ask",
+        "edit": "deny"
+      }
+    },
+
+    "security-analyzer": {
+      "description": "Read-only security analysis subagent for auth, validation, secrets, injection, XSS, CSRF, SSRF, CORS, cookies, and deployment exposure.",
+      "mode": "subagent",
+      "model": "opencode/deepseek-v4-flash-free",
+      "temperature": 0.05,
+      "prompt": "{file:prompts/security-analyzer.md}",
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "bash": "ask",
+        "edit": "deny"
+      }
+    },
+
+    "test-analyzer": {
+      "description": "Read-only tests, coverage gaps, fixtures, commands, and verification strategy analysis subagent.",
+      "mode": "subagent",
+      "model": "opencode/deepseek-v4-flash-free",
+      "temperature": 0.1,
+      "prompt": "{file:prompts/test-analyzer.md}",
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "bash": "ask",
+        "edit": "deny"
+      }
+    },
+
+    "brainstormer": {
+      "description": "Turns analyzer context into a user-approved design and subagent slice map.",
+      "mode": "primary",
+      "model": "opencode/deepseek-v4-flash-free",
+      "temperature": 0.35,
+      "prompt": "{file:prompts/brainstormer.md}",
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "task": {
+          "*": "deny",
+          "backend-analyzer": "allow",
+          "frontend-analyzer": "allow",
+          "docker-devops-analyzer": "allow",
+          "security-analyzer": "allow",
+          "test-analyzer": "allow"
+        },
+        "bash": {
+          "*": "ask",
+          "Test-Path -LiteralPath '.opencode/tmp/prompt-handoff.md'": "allow",
+          "Test-Path -LiteralPath '.opencode/tmp/analyzer-handoff.md'": "allow",
+          "Test-Path -LiteralPath '.opencode/tmp/brainstorm-handoff.md'": "allow",
+          "Test-Path -LiteralPath '.opencode/tmp/sprint-backlog.md'": "allow",
+          "Remove-Item -LiteralPath '.opencode/tmp/prompt-handoff.md' -Force": "allow",
+          "Remove-Item -LiteralPath '.opencode/tmp/analyzer-handoff.md' -Force": "allow",
+          "Remove-Item -LiteralPath '.opencode/tmp/brainstorm-handoff.md' -Force": "allow",
+          "Remove-Item -LiteralPath '.opencode/tmp/sprint-backlog.md' -Force": "allow"
+        },
+        "edit": {
+          "*": "deny",
+          ".opencode/tmp/*": "allow"
+        },
+        "question": "allow",
+        "webfetch": "ask",
+        "websearch": "ask"
+      }
+    },
+
+    "implementor": {
+      "description": "Implements approved brainstorm plans with strict architecture, subagent, test, verification, and git discipline.",
+      "mode": "primary",
+      "model": "opencode/deepseek-v4-flash-free",
+      "temperature": 0.2,
+      "prompt": "{file:prompts/implementor.md}",
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "task": "allow",
+        "bash": {
+          "*": "ask",
+          "Test-Path -LiteralPath '.opencode/tmp/prompt-handoff.md'": "allow",
+          "Test-Path -LiteralPath '.opencode/tmp/analyzer-handoff.md'": "allow",
+          "Test-Path -LiteralPath '.opencode/tmp/brainstorm-handoff.md'": "allow",
+          "Test-Path -LiteralPath '.opencode/tmp/sprint-backlog.md'": "allow",
+          "Remove-Item -LiteralPath '.opencode/tmp/prompt-handoff.md' -Force": "allow",
+          "Remove-Item -LiteralPath '.opencode/tmp/analyzer-handoff.md' -Force": "allow",
+          "Remove-Item -LiteralPath '.opencode/tmp/brainstorm-handoff.md' -Force": "allow",
+          "Remove-Item -LiteralPath '.opencode/tmp/sprint-backlog.md' -Force": "allow"
+        },
+        "edit": {
+          "*": "ask",
+          ".opencode/tmp/*": "allow"
+        },
+        "question": "allow",
+        "webfetch": "ask",
+        "websearch": "ask"
+      }
+    },
+
+    "sprint-implementor": {
+      "description": "Implements exactly one approved sprint from a resumable backlog with subagent, test, verification, commit, and push discipline.",
+      "mode": "primary",
+      "model": "opencode/deepseek-v4-flash-free",
+      "temperature": 0.2,
+      "prompt": "{file:prompts/sprint-implementor.md}",
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "task": "allow",
+        "bash": {
+          "*": "ask",
+          "Test-Path -LiteralPath '.opencode/tmp/prompt-handoff.md'": "allow",
+          "Test-Path -LiteralPath '.opencode/tmp/analyzer-handoff.md'": "allow",
+          "Test-Path -LiteralPath '.opencode/tmp/brainstorm-handoff.md'": "allow",
+          "Test-Path -LiteralPath '.opencode/tmp/sprint-backlog.md'": "allow",
+          "Remove-Item -LiteralPath '.opencode/tmp/prompt-handoff.md' -Force": "allow",
+          "Remove-Item -LiteralPath '.opencode/tmp/analyzer-handoff.md' -Force": "allow",
+          "Remove-Item -LiteralPath '.opencode/tmp/brainstorm-handoff.md' -Force": "allow",
+          "Remove-Item -LiteralPath '.opencode/tmp/sprint-backlog.md' -Force": "allow"
+        },
+        "edit": {
+          "*": "ask",
+          ".opencode/tmp/*": "allow"
+        },
+        "question": "allow",
+        "webfetch": "ask",
+        "websearch": "ask"
+      }
+    }
+  },
+
+  "command": {
+    // Handoff files are temporary context packets and should not be committed.
+    // Keep .opencode/tmp/ ignored in every project that uses this workflow.
+    "prompt": {
+      "description": "Clarify a rough engineering request and create a comprehensive analyzer prompt handoff.",
+      "agent": "prompter",
+      "template": "{file:command-templates/prompt.md}"
+    },
+
+    "analyze": {
+      "description": "Multi-agent repository analysis with environment and terminal guidance.",
+      "agent": "repo-analyzer",
+      "model": "opencode/deepseek-v4-flash-free",
+      "template": "{file:command-templates/analyze.md}"
+    },
+
+    "brainstorm": {
+      "description": "Turn analyzer context into a user-approved design and implementation slice map.",
+      "agent": "brainstormer",
+      "template": "{file:command-templates/brainstorm.md}"
+    },
+
+    "implement": {
+      "description": "Implement an approved brainstorm plan with strict architecture, tests, verification, and git discipline.",
+      "agent": "implementor",
+      "template": "{file:command-templates/implement.md}"
+    },
+
+    "sprint": {
+      "description": "Implement exactly one approved sprint from a resumable brainstorm backlog.",
+      "agent": "sprint-implementor",
+      "template": "{file:command-templates/sprint.md}"
+    }
+  }
+}
