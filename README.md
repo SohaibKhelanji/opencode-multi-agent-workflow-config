@@ -34,3 +34,9 @@ Each slash command delegates to a specialized agent and passes context via hando
 
 - [OpenCode](https://opencode.ai) CLI
 - PowerShell 5.1+ (for tests)
+
+## Instalation 
+
+To install this configuration, copy the repository contents into `%USERPROFILE%\.config\opencode` on Windows, preserving the existing folder structure, then restart OpenCode so it reloads `opencode.jsonc`, the agent definitions, commands, and supporting files.
+
+
